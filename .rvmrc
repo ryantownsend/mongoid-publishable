@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+if ! rvm list | grep -q ruby-1.9.3-p194 ; then
+	rvm install 1.9.3-p194
+fi
+
+rvm 1.9.3-p194@ryantownsend_mongoid_publishable --create
+
+if ! gem list | grep -q bundler ; then
+	gem install --no-ri --no-rdoc bundler
+	bundle install --without production
+fi
