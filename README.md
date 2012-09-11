@@ -20,14 +20,17 @@ Or install it yourself as:
 
 Include the module in any models you want to be publishable:
 
+```ruby
     class Review
       include Mongoid::Document
       include Mongoid::Publishable
       # ...
     end
+```
 
 It will use the `user_id` column by default, but you can override that by using `publisher_column`. It also assumes you're using the `id` attribute of the publisher, again you can override it using `publisher_foreign_key`, here's an example:
 
+```ruby
     class ChatMessage
       include Mongoid::Document
       include Mongoid::Publishable
@@ -38,9 +41,11 @@ It will use the `user_id` column by default, but you can override that by using 
       publisher_foreign_key :username
       # ...
     end
+```
 
 In your controllers, or anywhere you save the objects, you can swap out your `save` calls for `persist_and_publish!` calls, this method accepts an optional user. If none is passed, or the object that you do pass is nil, it'll raise an exception, so you can handle your authentication there:
 
+```ruby
     class ReviewsController < ApplicationController
       include Mongoid::Publishable::Queuing
 
@@ -63,9 +68,11 @@ In your controllers, or anywhere you save the objects, you can swap out your `sa
         redirect_to new_user_session_path
       end
     end
+```
 
 An alternative without the exception handling would be:
 
+```ruby
     class ReviewsController < ApplicationController
       include Mongoid::Publishable::Queuing
     
@@ -89,9 +96,11 @@ An alternative without the exception handling would be:
         end
       end
     end
+```
    
 The advantage to the former style (using exceptions) is that you can handle them globally in your ApplicationController using this code:
 
+```ruby
     class ApplicationController < ActionController::Base
       include Mongoid::Publishable::Queuing
       
@@ -105,9 +114,11 @@ The advantage to the former style (using exceptions) is that you can handle them
         redirect_to new_user_session_path
       end
     end
+```
 
 The publishing queue is stored in the user's session. After authentication, you'll want to call `publish_via` on the queue, which will then publish all the objects it contains. Here's an example:
 
+```ruby
     class UserSessionsController < ApplicationController
       def create
         @user = User.authenticate(params[:user])
@@ -125,9 +136,11 @@ The publishing queue is stored in the user's session. After authentication, you'
       
       # ...
     end
+```
 
 Models are also provided with an `after_publish` callback that can be used like any other ActiveModel-style callback.
 
+```ruby
     class Review
       include Mongoid::Document
       include Mongoid::Publishable
@@ -144,6 +157,7 @@ Models are also provided with an `after_publish` callback that can be used like 
         # do something
       end
     end
+```
 
 ## Contributing
 
