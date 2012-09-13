@@ -11,43 +11,45 @@ module Mongoid
         end
       end
       
-      module ClassMethods
-        # returns the list of callbacks
-        def after_publish_callbacks
-          @after_publish_callbacks ||= []
-        end
-        
-        # adds a callback to the list
-        def after_publish(*args)
+      class CallbackStorage < Array; end
+      
+      class Callback
+        def initialize(*args)
           if block_given?
-            @after_publish_callbacks ||= []
-            @after_publish_callbacks << &block
+            @method = block
           elsif args.length == 1 && args[0].kind_of?(Symbol)
-            @after_publish_callbacks ||= []
-            @after_publish_callbacks << args[0]
+            @method = args[0]
           else
             raise ArgumentError, "after_publish only allows a block or a symbol method reference as arguments"
           end
         end
+        
+        def process(object)
+          if @method.respond_to?(:yield)
+            @method.yield(object)
+          else
+            object.call(@method)
+          end
+        end
       end
       
-      module InstanceMethods
-        # allow additional per-instance after_publish callbacks,
-        # delegate to the class for defaults too
+      module ClassMethods
+        # returns the list of callbacks
         def after_publish_callbacks
-          (@after_publish_callbacks || []) + self.class.after_publish_callbacks
+          @after_publish_callbacks ||= CallbackStorage.new
         end
         
+        # adds a callback to the list
+        def after_publish(*args)
+          after_publish_callbacks << Callback.new(*args)
+        end
+      end
+      
+      module InstanceMethods        
         # process the callbacks
         def process_after_publish_callbacks
-          after_publish_callbacks.each do |callback|
-            if callback.kind_of?(Symbol)
-              send(callback)
-            elsif callback.respond_to?(:yield)
-              callback.yield(self)
-            else
-              raise ArgumentError, "Unknown how to handle after_publish callback of type: #{callback.class.name}"
-            end
+          self.class.after_publish_callbacks.each do |callback|
+            callback.process(self)
           end
         end
     
