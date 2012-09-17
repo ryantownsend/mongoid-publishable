@@ -2,7 +2,10 @@
 
 Ever wanted to allow your users to create something (or somethings) before authenticating. For example, you might want to let them write a review, before you ask them to login and publish it. This is what Mongoid::Publishable handles.
 
-[![Build Status](https://secure.travis-ci.org/ryantownsend/mongoid-publishable.png?branch=master)][http://travis-ci.org/ryantownsend/mongoid-publishable]
+[![Build Status][2]][1]
+
+  [1]: http://travis-ci.org/ryantownsend/mongoid-publishable
+  [2]: https://secure.travis-ci.org/ryantownsend/mongoid-publishable.png?branch=master
 
 ## Installation
 
