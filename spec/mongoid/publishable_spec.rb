@@ -1,7 +1,5 @@
 require "spec_helper"
 require "mongoid/publishable"
-require "publishable_object"
-require "publisher"
 
 describe Mongoid::Publishable do
   let(:user) { mock("user", id: 123) }

@@ -1,8 +1,20 @@
+require "multi_json"
+
 module Mongoid
   module Publishable
     class UnpublishedObject
       def self.deserialize_from_session(data)
         new(data: data)
+      end
+      
+      def initialize(options = {})
+        if options[:model]
+          @source_object = options[:model]
+        elsif options[:data]
+          @serialized_data = options[:data]
+        else
+          raise ArgumentError, "No :model or :data provided"
+        end
       end
       
       def serialize_for_session
@@ -11,16 +23,6 @@ module Mongoid
       
       def params
         MultiJson.load(@serialized_data)
-      end
-      
-      def initialize(options)
-        if options[:model]
-          @source_object = options[:model]
-        elsif options[:data]
-          @serialized_data = options[:data]
-        else
-          raise ArgumentError, "No :model or :params provided"
-        end
       end
       
       def respond_to_missing?(method)
@@ -43,13 +45,13 @@ module Mongoid
       def load_source_object_from_params
         data = params
         # load the top level object
-        object = data[:class_name].constantize.find(params[:id])
+        object = data["class_name"].constantize.find(data["id"])
         # if we have embedded stuff
-        while data[:embedded]
+        while data["embedded"]
           # work on the next level down
-          data = data[:embedded]
+          data = data["embedded"]
           # find the nested object
-          object = object.send(data[:association]).find(data[:id])
+          object = object.send(data["association"]).find(data["id"])
         end
         # once at the bottom, return the object
         object

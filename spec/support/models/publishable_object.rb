@@ -1,3 +1,5 @@
+require "mongoid/publishable"
+
 class PublishableObject
   include Mongoid::Document
   include Mongoid::Publishable

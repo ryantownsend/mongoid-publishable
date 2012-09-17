@@ -11,7 +11,7 @@ module Mongoid
         # if there was no existing queue, return new
         return queue unless session
         # create our contents
-        contents = session.each_line do |data|
+        contents = session.split("\n").map do |data|
           UnpublishedObject.deserialize_from_session(data)
         end
         # add into the queue
@@ -21,7 +21,8 @@ module Mongoid
       # publishes all the objects on the queue to this user
       def publish_via(publisher)
         remaining = delete_if do |model|
-          model.publish_via!(publisher) && model.published?
+          model.publish_via!(publisher)
+          model.published?
         end
         # replaces the contents with the remaining models
         replace(remaining)
