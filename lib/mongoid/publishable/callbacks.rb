@@ -1,3 +1,6 @@
+require "mongoid/publishable/callback"
+require "mongoid/publishable/callback_collection"
+
 module Mongoid
   module Publishable
 
@@ -11,46 +14,24 @@ module Mongoid
         end
       end
       
-      class CallbackStorage < Array; end
-      
-      class Callback
-        def initialize(*args)
-          if block_given?
-            @method = block
-          elsif args.length == 1 && args[0].kind_of?(Symbol)
-            @method = args[0]
-          else
-            raise ArgumentError, "after_publish only allows a block or a symbol method reference as arguments"
-          end
-        end
-        
-        def process(object)
-          if @method.respond_to?(:yield)
-            @method.yield(object)
-          else
-            object.call(@method)
-          end
-        end
-      end
-      
       module ClassMethods
         # returns the list of callbacks
         def after_publish_callbacks
-          @after_publish_callbacks ||= CallbackStorage.new
+          @after_publish_callbacks ||= CallbackCollection.new
         end
         
         # adds a callback to the list
-        def after_publish(*args)
-          after_publish_callbacks << Callback.new(*args)
+        def after_publish(*args, &block)
+          Callback.new(*args, &block).tap do |callback|
+            after_publish_callbacks << callback
+          end
         end
       end
       
       module InstanceMethods        
         # process the callbacks
         def process_after_publish_callbacks
-          self.class.after_publish_callbacks.each do |callback|
-            callback.process(self)
-          end
+          self.class.after_publish_callbacks.process(self)
         end
     
         # set to run the callbacks after save

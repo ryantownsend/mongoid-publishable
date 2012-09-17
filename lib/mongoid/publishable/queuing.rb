@@ -1,3 +1,5 @@
+require "mongoid/publishable/queue"
+
 module Mongoid
   module Publishable
     module Queuing

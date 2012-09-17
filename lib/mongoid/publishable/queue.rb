@@ -1,3 +1,5 @@
+require "mongoid/publishable/unpublished_object"
+
 module Mongoid
   module Publishable
     class Queue < Array

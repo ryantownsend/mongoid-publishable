@@ -11,7 +11,9 @@ Ever wanted to allow your users to create something (or somethings) before authe
 
 Add this line to your application's Gemfile:
 
-    gem "mongoid-publishable"
+```ruby
+gem "mongoid-publishable"
+```
 
 And then execute:
 
@@ -168,7 +170,9 @@ end
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Run the test suite (`rake`)
+3. Run the test suite (`rake`), ensure all specs pass
 4. Commit your changes (`git commit -am 'Add some feature'`)
 5. Push to the branch (`git push origin my-new-feature`)
 6. Create new Pull Request
+
+After running specs, you can find a test coverage report at coverage/index.html
