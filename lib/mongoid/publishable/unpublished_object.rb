@@ -25,8 +25,8 @@ module Mongoid
         MultiJson.load(@serialized_data)
       end
       
-      def respond_to_missing?(method)
-        source_object.respond_to?(method)
+      def respond_to_missing?(method, include_private = false)
+        source_object.respond_to?(method) || super
       end
       
       def method_missing(method, *args, &block)
@@ -71,7 +71,7 @@ module Mongoid
           result = {
             embedded: {
               association: parent_relation.inverse_of,
-              embedded: result,
+              embedded: result && result[:embedded],
               id: object.id
             }
           }
@@ -79,7 +79,7 @@ module Mongoid
           object = object._parent
         end
         # when at the top level, store the class/id/result
-        result = { class_name: object.class.name, id: object.id, embedded: result }
+        result = { class_name: object.class.name, id: object.id, embedded: result && result[:embedded] }
         # convert the result to JSON
         MultiJson.dump(result)
       end

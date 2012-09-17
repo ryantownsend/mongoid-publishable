@@ -4,6 +4,12 @@ require "mongoid/publishable/unpublished_object"
 
 describe Mongoid::Publishable::UnpublishedObject do
   let(:model) { PublishableObject.new }
+  let(:parent_model) do
+    ParentPublishableObject.create
+  end
+  let(:nested_model) do
+    parent_model.nested_objects.build
+  end
 
   describe "::deserialize_from_session" do
     it "should initialize with data" do
@@ -55,6 +61,35 @@ describe Mongoid::Publishable::UnpublishedObject do
         json = MultiJson.load(subject.serialize_for_session)
         expect(json["class_name"]).to eq model.class.name
         expect(json["id"].to_s).to eq model.id.to_s
+      end
+      
+      it "should deserialise back into the object" do
+        model.save
+        data = subject.serialize_for_session
+        reloaded_subject = subject.class.deserialize_from_session(data)
+        expect(reloaded_subject.source_object).to eq subject.source_object
+      end
+    end
+    
+    context "with a nested model" do
+      subject do
+        Mongoid::Publishable::UnpublishedObject.new(model: nested_model)
+      end
+      
+      it "should return a string of JSON" do
+        json = MultiJson.load(subject.serialize_for_session)
+        expect(json["class_name"]).to eq nested_model._parent.class.name
+        expect(json["id"].to_s).to eq nested_model._parent.id.to_s
+        expect(json["embedded"]["id"]).to eq nested_model.id.to_s
+        expect(json["embedded"]["association"]).to eq "nested_objects"
+        expect(json["embedded"]["embedded"]).to be_nil
+      end
+      
+      it "should deserialise back into the object" do
+        nested_model.save
+        data = subject.serialize_for_session
+        reloaded_subject = subject.class.deserialize_from_session(data)
+        expect(reloaded_subject.source_object).to eq subject.source_object
       end
     end
     

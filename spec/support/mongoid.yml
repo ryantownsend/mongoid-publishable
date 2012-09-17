@@ -1,0 +1,6 @@
+test:
+  sessions:
+    default:
+      hosts:
+        - localhost:27017
+      database: ryantownsend_mongoid_publishable
