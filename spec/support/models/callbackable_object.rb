@@ -1,6 +1,6 @@
 require "mongoid/publishable/callbacks"
 
 class CallbackableObject
-  def self.after_save(*args); end
+  include Mongoid::Document
   include Mongoid::Publishable::Callbacks
 end

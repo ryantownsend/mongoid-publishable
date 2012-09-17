@@ -1,0 +1,2 @@
+class CallbackableSubobject < CallbackableObject
+end

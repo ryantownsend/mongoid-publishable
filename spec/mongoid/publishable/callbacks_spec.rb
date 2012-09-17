@@ -9,6 +9,12 @@ describe Mongoid::Publishable::Callbacks do
       CallbackableObject
     end
     
+    before(:each) do
+      [CallbackableObject, CallbackableSubobject].each do |klass|
+        klass.after_publish_callbacks.replace []
+      end
+    end
+    
     describe "::after_publish_callbacks" do
       it "should return an object that responds to #process" do
         expect(subject.after_publish_callbacks).to respond_to :process
@@ -17,7 +23,6 @@ describe Mongoid::Publishable::Callbacks do
   
     describe "::after_publish" do
       it "should increment the callbacks by 1" do
-        subject.after_publish_callbacks.replace []
         expect(subject.after_publish_callbacks.size).to eq 0
         subject.after_publish(:method_name)
         expect(subject.after_publish_callbacks.size).to eq 1
@@ -34,11 +39,35 @@ describe Mongoid::Publishable::Callbacks do
         callback = subject.after_publish(:method_name)
         expect(callback).to respond_to :process
       end
+      
+      it "should be inherited by any sub-classes" do
+        expect(CallbackableSubobject.after_publish_callbacks.size).to eq 0
+        CallbackableObject.after_publish(:method_name)
+        expect(CallbackableSubobject.after_publish_callbacks.size).to eq 1
+      end
     end
 
   end # class
   
-  context "an instance class that's included Mongoid::Publishable::Callbacks" do
+  context "a sub-class of a class that's included Mongoid::Publishable::Callbacks" do
+    
+    before(:each) do
+      [CallbackableObject, CallbackableSubobject].each do |klass|
+        klass.after_publish_callbacks.replace []
+      end
+    end
+    
+    describe "defining a callback" do
+      it "should not be defined on the parent class" do
+        expect(CallbackableObject.after_publish_callbacks.size).to eq 0
+        CallbackableSubobject.after_publish(:method_name)
+        expect(CallbackableObject.after_publish_callbacks.size).to eq 0
+      end
+    end
+
+  end
+  
+  context "an instance of a class that's included Mongoid::Publishable::Callbacks" do
 
     subject do
       CallbackableObject.new
