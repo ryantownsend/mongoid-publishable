@@ -25,8 +25,11 @@ module Mongoid
           @after_publish_callbacks ||= CallbackCollection.new
         end
         
+        # add the callback to the collection
         def add_after_publish_callback(callback)
+          # add it to this object's collection
           after_publish_callbacks << callback
+          # add it to the subclasses collections too
           subclasses.each do |subclass|
             subclass.add_after_publish_callback(callback)
           end
