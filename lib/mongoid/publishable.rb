@@ -1,4 +1,5 @@
 require "mongoid"
+require "mongoid/publishable/queuing"
 require "mongoid/publishable/callbacks"
 require "mongoid/publishable/unpublished_error"
 
