@@ -1,5 +1,4 @@
 require "spec_helper"
-require "mongoid/publishable/callback_collection"
 
 describe Mongoid::Publishable::CallbackCollection do
   let(:callback) { mock("callback") }

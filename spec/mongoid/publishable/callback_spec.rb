@@ -1,5 +1,4 @@
 require "spec_helper"
-require "mongoid/publishable/callback"
 
 describe Mongoid::Publishable::Callback do
   subject { Mongoid::Publishable::Callback }

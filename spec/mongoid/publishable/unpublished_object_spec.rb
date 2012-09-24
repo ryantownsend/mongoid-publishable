@@ -1,5 +1,4 @@
 require "spec_helper"
-require "mongoid/publishable/unpublished_object"
 
 describe Mongoid::Publishable::UnpublishedObject do
   let(:model) { PublishableObject.new }

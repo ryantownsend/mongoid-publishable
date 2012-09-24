@@ -12,7 +12,7 @@ Ever wanted to allow your users to create something (or somethings) before authe
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "mongoid-publishable", require: "mongoid/publishable"
+gem "mongoid-publishable"
 ```
 
 And then execute:
@@ -53,8 +53,6 @@ end
 In your controllers, or anywhere you save the objects, you can swap out your `save` calls for `persist_and_publish!` calls, this method accepts an optional user. If none is passed, or the object that you do pass is nil, it'll raise an exception, so you can handle your authentication there:
 
 ```ruby
-require: "mongoid/publishable"
-
 class ReviewsController < ApplicationController
   include Mongoid::Publishable::Queuing
 
@@ -82,8 +80,6 @@ end
 An alternative without the exception handling would be:
 
 ```ruby
-require: "mongoid/publishable"
-
 class ReviewsController < ApplicationController
   include Mongoid::Publishable::Queuing
 
@@ -112,8 +108,6 @@ end
 The advantage to the former style (using exceptions) is that you can handle them globally in your ApplicationController using this code:
 
 ```ruby
-require: "mongoid/publishable"
-
 class ApplicationController < ActionController::Base
   include Mongoid::Publishable::Queuing
   
@@ -132,8 +126,6 @@ end
 The publishing queue is stored in the user's session. After authentication, you'll want to call `publish_via` on the queue, which will then publish all the objects it contains. Here's an example:
 
 ```ruby
-require: "mongoid/publishable"
-
 class UserSessionsController < ApplicationController
   include Mongoid::Publishable::Queuing
 
