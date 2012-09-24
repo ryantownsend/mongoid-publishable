@@ -19,8 +19,9 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   
   s.add_dependency "mongoid"
-  s.add_dependency "multi_json"
+  s.add_dependency "mongoid-nested-serialization"
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec"
+  s.add_development_dependency "foreman"
   s.add_development_dependency "simplecov"
 end

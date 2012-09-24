@@ -1,5 +1,4 @@
 require "spec_helper"
-require "multi_json"
 require "mongoid/publishable/unpublished_object"
 
 describe Mongoid::Publishable::UnpublishedObject do
@@ -57,12 +56,6 @@ describe Mongoid::Publishable::UnpublishedObject do
         Mongoid::Publishable::UnpublishedObject.new(model: model)
       end
       
-      it "should return a string of JSON" do
-        json = MultiJson.load(subject.serialize_for_session)
-        expect(json["class_name"]).to eq model.class.name
-        expect(json["id"].to_s).to eq model.id.to_s
-      end
-      
       it "should deserialise back into the object" do
         model.save
         data = subject.serialize_for_session
@@ -76,47 +69,11 @@ describe Mongoid::Publishable::UnpublishedObject do
         Mongoid::Publishable::UnpublishedObject.new(model: nested_model)
       end
       
-      it "should return a string of JSON" do
-        json = MultiJson.load(subject.serialize_for_session)
-        expect(json["class_name"]).to eq nested_model._parent.class.name
-        expect(json["id"].to_s).to eq nested_model._parent.id.to_s
-        expect(json["embedded"]["id"]).to eq nested_model.id.to_s
-        expect(json["embedded"]["association"]).to eq "nested_objects"
-        expect(json["embedded"]["embedded"]).to be_nil
-      end
-      
       it "should deserialise back into the object" do
         nested_model.save
         data = subject.serialize_for_session
         reloaded_subject = subject.class.deserialize_from_session(data)
         expect(reloaded_subject.source_object).to eq subject.source_object
-      end
-    end
-    
-    context "with data" do
-      subject do
-        data = %Q({ "class_name": "Item", "id": "123" })
-        Mongoid::Publishable::UnpublishedObject.new(data: data)
-      end
-      
-      it "should return a string of JSON" do
-        json = MultiJson.load(subject.serialize_for_session)
-        expect(json["class_name"]).to eq "Item"
-        expect(json["id"].to_s).to eq "123"
-      end
-    end
-  end
-  
-  describe "#params" do
-    context "with data" do
-      subject do
-        data = %Q({ "class_name": "Item", "id": "123" })
-        Mongoid::Publishable::UnpublishedObject.new(data: data).params
-      end
-      
-      it "should return a string of JSON" do
-        expect(subject["class_name"]).to eq "Item"
-        expect(subject["id"].to_s).to eq "123"
       end
     end
   end
