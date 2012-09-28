@@ -47,7 +47,7 @@ module Mongoid
       end
       
       def serialize_object_for_session
-        source_object.finder_json
+        Mongoid::NestedSerialization::Serializer.new(source_object).to_json
       end
     end
   end
