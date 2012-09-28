@@ -92,8 +92,16 @@ describe Mongoid::Publishable::UnpublishedObject do
       Mongoid::Publishable::UnpublishedObject.new(model: model)
     end
     
-    it "should delegate to the model" do
-      expect(subject.id).to eq model.id
+    context "with an existing model method" do
+      it "should delegate to the model" do
+        expect(subject.id).to eq model.id
+      end
+    end
+    
+    context "with a non-existent model method" do
+      it "should raise the typical error" do
+        expect { subject.random_method }.to raise_error(NoMethodError)
+      end
     end
   end
   
