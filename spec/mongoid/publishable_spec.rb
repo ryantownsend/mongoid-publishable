@@ -183,6 +183,30 @@ describe Mongoid::Publishable do
         end
       end
     end
+    
+    describe "#meets_custom_publishing_conditions?" do
+      context "without custom publishing conditions" do
+        before(:each) do
+          subject.stub(:publishing_conditions).and_return(nil)
+        end
+        
+        it "should return true" do
+          expect(subject.meets_custom_publishing_conditions?).to be_true
+        end
+      end
+      
+      context "with custom publishing conditions" do
+        before(:each) do
+          subject.class.publishing_conditions do |object|
+            !!object.user_id
+          end
+        end
+        
+        it "should return false" do
+          expect(subject.meets_custom_publishing_conditions?).to be_false
+        end
+      end
+    end
 
     describe "#requires_publishing?" do
       context "when persisted" do
