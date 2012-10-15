@@ -181,6 +181,6 @@ end
 
 After running specs, you can find a test coverage report at `coverage/index.html`.
 
-Note: you can run the test suite automatically by starting Watchr, do this with the following command:
+Note: you can run the test suite automatically by starting Guard, do this with the following command:
 
-    $ rake watchr
+    $ bundle exec guard start

@@ -5,7 +5,7 @@ gemspec
 
 case RUBY_PLATFORM
 when /darwin/
-  gem "rb-fsevent"
+  gem "rb-fsevent", require: false
 when /linux/
-  gem "rev"
+  gem "rb-inotify", require: false
 end
