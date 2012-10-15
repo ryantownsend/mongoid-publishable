@@ -2,10 +2,12 @@
 
 Ever wanted to allow your users to create something (or somethings) before authenticating. For example, you might want to let them write a review, before you ask them to login and publish it. This is what Mongoid::Publishable handles.
 
-[![Build Status][2]][1]
+[![Build Status][2]][1] [![Code Climate][3]][4]
 
   [1]: http://travis-ci.org/ryantownsend/mongoid-publishable
   [2]: https://secure.travis-ci.org/ryantownsend/mongoid-publishable.png?branch=master
+  [3]: https://codeclimate.com/badge.png
+  [4]: https://codeclimate.com/github/ryantownsend/mongoid-publishable
 
 ## Installation
 
