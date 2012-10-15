@@ -170,6 +170,19 @@ class Review
 end
 ```
 
+You can define custom publishing requirements:
+
+```ruby
+class Tweet
+  include Mongoid::Document
+  include Mongoid::Publishable
+
+  publishing_conditions do |tweet|
+    tweet.user.has_twitter_account?
+  end # => should return true / false
+end
+```
+
 ## Contributing
 
 1. Fork it
