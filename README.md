@@ -177,4 +177,8 @@ end
 5. Push to the branch (`git push origin my-new-feature`)
 6. Create new Pull Request
 
-After running specs, you can find a test coverage report at coverage/index.html
+After running specs, you can find a test coverage report at `coverage/index.html`.
+
+Note: you can run the test suite automatically by starting Watchr, do this with the following command:
+
+    $ bundle exec watchr specs.watchr
