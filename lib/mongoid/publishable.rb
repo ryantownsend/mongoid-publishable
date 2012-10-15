@@ -22,9 +22,19 @@ module Mongoid
         @publisher_column || :user_id
       end
 
+      # gets/sets the foreign key of the publisher to be stored
       def publisher_foreign_key(name = nil)
         @publisher_foreign_key = name if name
         @publisher_foreign_key || :id
+      end
+      
+      # gets/sets custom publishing conditions
+      def publishing_conditions(&block)
+        if block_given?
+          @publishing_conditions = block
+        else
+          @publishing_conditions
+        end
       end
     end
 
@@ -68,8 +78,11 @@ module Mongoid
           value = publisher.send(publisher_foreign_key)
           # update this instance with the key
           self.send("#{publisher_column}=", value)
-          # mark as just published
-          run_after_publish_callbacks
+          # if this now counts as published
+          if pre_published?
+            # mark as just published
+            run_after_publish_callbacks
+          end
         end
       end
 
@@ -81,12 +94,33 @@ module Mongoid
 
       # returns boolean of whether this instance has been published
       def published?
-        persisted? && send(publisher_column)
+        persisted? && has_publisher_id? && meets_custom_publishing_conditions?
+      end
+      
+      # returns boolean of whether this instance has been published
+      # regardless of whether it's been persisted yet
+      def pre_published?
+        has_publisher_id? && meets_custom_publishing_conditions?
       end
 
       # returns whether this instance needs publishing (persisted, not published)
       def requires_publishing?
-        persisted? && !send(publisher_column)
+        persisted? && (!has_publisher_id? || !meets_custom_publishing_conditions?)
+      end
+      
+      # returns whether or not the publisher is present
+      def has_publisher_id?
+        !!send(publisher_column)
+      end
+      
+      # returns true if there are no conditions, or the resulting yield is true
+      def meets_custom_publishing_conditions?
+        publishing_conditions.nil? || publishing_conditions.yield(self)
+      end
+      
+      # returns a block with custom publishing conditions
+      def publishing_conditions
+        self.class.publishing_conditions
       end
 
       # raises an UnpublishedError containing this object as a reference
