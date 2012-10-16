@@ -91,11 +91,6 @@ module Mongoid
       def publish_via!(publisher)
         publish_via(publisher) && save
       end
-
-      # returns boolean of whether this instance has been published
-      def published?
-        persisted? && has_publisher_id? && meets_custom_publishing_conditions?
-      end
       
       # returns boolean of whether this instance has been published
       # regardless of whether it's been persisted yet
@@ -103,9 +98,14 @@ module Mongoid
         has_publisher_id? && meets_custom_publishing_conditions?
       end
 
+      # returns boolean of whether this instance has been published
+      def published?
+        persisted? && pre_published?
+      end
+
       # returns whether this instance needs publishing (persisted, not published)
       def requires_publishing?
-        persisted? && (!has_publisher_id? || !meets_custom_publishing_conditions?)
+        persisted? && !pre_published?
       end
       
       # returns whether or not the publisher is present
