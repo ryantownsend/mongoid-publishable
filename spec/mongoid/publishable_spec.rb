@@ -48,6 +48,10 @@ describe Mongoid::Publishable do
   describe "an instance of a class that includes the module" do
     subject { PublishableObject.new }
     
+    after(:each) do
+      subject.class.instance_variable_set(:"@publishing_conditions", nil)
+    end
+    
     describe "#publisher_column" do
       it "should return :user_id by default" do
         expect(subject.publisher_column).to eq :user_id
@@ -114,6 +118,20 @@ describe Mongoid::Publishable do
         before(:each) do
           subject.stub(:persisted?).and_return(true)
           subject.stub(:save).and_return(true)
+        end
+        
+        context "but with unmet custom publishing conditions" do
+          before(:each) do
+            subject.class.publishing_conditions do |object|
+              false
+            end
+          end
+          
+          it "should raise an exception" do
+            expect {
+              subject.persist_and_publish!(nil)
+            }.to raise_error(Mongoid::Publishable::UnpublishedError)
+          end
         end
         
         context "but not published" do
@@ -195,7 +213,19 @@ describe Mongoid::Publishable do
         end
       end
       
-      context "with custom publishing conditions" do
+      context "with met custom publishing conditions" do
+        before(:each) do
+          subject.class.publishing_conditions do |object|
+            true
+          end
+        end
+        
+        it "should return true" do
+          expect(subject.meets_custom_publishing_conditions?).to be_true
+        end
+      end
+      
+      context "with unmet custom publishing conditions" do
         before(:each) do
           subject.class.publishing_conditions do |object|
             !!object.user_id
