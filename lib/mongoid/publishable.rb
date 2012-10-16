@@ -83,6 +83,8 @@ module Mongoid
             # mark as just published
             run_after_publish_callbacks
           end
+          # always return true
+          true
         end
       end
 
