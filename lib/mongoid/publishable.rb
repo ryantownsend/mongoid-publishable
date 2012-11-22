@@ -41,7 +41,8 @@ module Mongoid
     module InstanceMethods
       # saves to the db, and publishes if possible
       def persist_and_publish(publisher = nil)
-        publish_via(publisher) && save
+        published = publish_via(publisher)
+        save && published
       end
 
       # saves to the db, and publishes if possible
@@ -85,6 +86,8 @@ module Mongoid
           end
           # always return true
           true
+        else
+          false
         end
       end
 
